@@ -1,5 +1,4 @@
 #!/usr/pkg/bin/perl
-#!/usr/bin/perl
 #
 use strict;
 use IO::Socket;
@@ -40,6 +39,7 @@ my %blocks = (
   'myc' => '16x16+208+64',
   'DOWN' => '16x16+16+128',
   'UP' => '16x16+32+144',
+  'dirt' => '16x16+32+0',
 );
 
 my $sock = new IO::Socket::INET (
@@ -79,15 +79,17 @@ $wool->read(filename=>$terrain);
 $wool->Crop(geometry=>$blocks{$status});
 $wool->Resize(geometry=>"${texture_size}x${texture_size}");
 
-$background->read(filename=>$terrain);
 my $top = param('t');
 unless (exists $blocks{$top}) { $top = 'grass'; }
 $grass->read(filename=>$terrain);
 $grass->Crop(geometry=>$blocks{$top});
-$background->Crop(geometry=>'16x16+32+0');
-$background->Resize(geometry=>"${texture_size}x${texture_size}");
-
 $grass->Resize(geometry=>"${texture_size}x${texture_size}");
+
+my $bg = param('b');
+unless (exists $blocks{$bg}) { $bg = 'dirt'; }
+$background->read(filename=>$terrain);
+$background->Crop(geometry=>$blocks{$bg});
+$background->Resize(geometry=>"${texture_size}x${texture_size}");
 
 $image->ReadImage('xc:black');
 my $point_size=18;
