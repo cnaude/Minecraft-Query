@@ -121,7 +121,6 @@ $image->Annotate(font=>$font, x=>$hpos, y=>$line2_pos, pointsize=>$point_size, f
 $image->Annotate(font=>$font, x=>$hpos, y=>$line3_pos, pointsize=>$point_size, fill=>$text_color, text=>"Players: $online/$max");
 $image->Annotate(font=>$font, x=>$hpos, y=>$line4_pos, pointsize=>$point_size, fill=>$text_color, text=>"Status: $status");
 
-print "Content-length: " . $image->Get(filesize) . "\n\n";
 print "Content-type: image/png\n\n";
 binmode STDOUT;
 $image->Write('png:-');
