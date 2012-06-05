@@ -42,18 +42,32 @@ Available options:
  port = TCP port
  c = Text color
  t = Top texture (grass, snow or myc) 
+ b = Background texture (dirt etc...)
 HTML
   exit 0;
 }
 
+my $texture_size = 16;
 my %blocks = (
-  'grass' => '16x16+48+0',
-  'snow' => '16x16+64+64',
-  'myc' => '16x16+208+64',
-  'Down' => '16x16+16+128',
-  'Up' => '16x16+32+144',
-  'dirt' => '16x16+32+0',
+  'grass' => '+48+0',
+  'snow' => '+64+64',
+  'myc' => '+208+64',
+  'Down' => '+16+128',
+  'Up' => '+32+144',
+  'dirt' => '+32+0',
+  'cobble' => '+0+16',
+  'sand' => '+32+16',
+  'sand' => '+48+16',
+  'log' => '+64+16',
+  'wood' => '+64+0',
+  'obsidian' => '+80+32',
+  'iron' => '+96+16',
+  'gold' => '+112+16',
+  'diamond' => '+128+16',
 );
+for my $k (keys %blocks) {
+  $blocks{$k} = "${texture_size}x${texture_size}${blocks{$k}}";
+}
 
 my $sock = new IO::Socket::INET (
   PeerAddr => $host,
@@ -86,32 +100,34 @@ my $wool = Image::Magick->new;
 my $grass = Image::Magick->new;
 my $background = Image::Magick->new;
 
-my $texture_size = "32";
+# Resize our textures
+my $texture_resize = $texture_size * 2;
+my $filter = 'Point';
 
 $wool->read(filename=>$terrain);
 $wool->Crop(geometry=>$blocks{$status});
-$wool->Resize(geometry=>"${texture_size}x${texture_size}");
+$wool->Resize(filter=>$filter,geometry=>"${texture_resize}x${texture_resize}");
 
 my $top = param('t');
 unless (exists $blocks{$top}) { $top = 'grass'; }
 $grass->read(filename=>$terrain);
 $grass->Crop(geometry=>$blocks{$top});
-$grass->Resize(geometry=>"${texture_size}x${texture_size}");
+$grass->Resize(filter=>$filter,geometry=>"${texture_resize}x${texture_resize}");
 
 my $bg = param('b');
 unless (exists $blocks{$bg}) { $bg = 'dirt'; }
 $background->read(filename=>$terrain);
 $background->Crop(geometry=>$blocks{$bg});
-$background->Resize(geometry=>"${texture_size}x${texture_size}");
+$background->Resize(filter=>$filter,geometry=>"${texture_resize}x${texture_resize}");
 
 $image->ReadImage('xc:black');
 my $point_size=18;
 $image->Draw(fill=>$text_color, primitive=>'rectangle', points=>'0,0 10,100');
 $image->Composite(image=>$background,compose=>'over',tile=>'true');
-for (my $i = $texture_size; $i<=384; $i+=$texture_size) {
+for (my $i = $texture_resize; $i<=384; $i+=$texture_resize) {
   $image->Composite(image=>$grass,compose=>'over',geometry=>"+${i}+0");
 }
-for (my $i = 0; $i<=64; $i+=$texture_size) {
+for (my $i = 0; $i<=64; $i+=$texture_resize) {
   $image->Composite(image=>$wool,compose=>'over',geometry=>"+0+${i}");
 }
 my $hpos = 40;
