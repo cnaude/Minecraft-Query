@@ -16,9 +16,22 @@ unless ($host) { $host = 'minecraft.sdf.org'; }
 my $port = param('port') or '25565';
 unless ($port) { $port = '25565'; }
 my ($motd,$online,$max);
-my $status = "UP";
+my $status = "Up";
 my $text_color = "yellow";
-if (param('c')) { $text_color = param('c'); }
+my $c1 = "cyan";
+my $c2 = "white";
+my $c3 = "white";
+my $c4 = "white";
+my $h1 = "yellow";
+my $h2 = "yellow";
+my $h3 = "yellow";
+if (param('c1')) { $c1 = param('c1'); }
+if (param('c2')) { $c2 = param('c2'); }
+if (param('c3')) { $c3 = param('c3'); }
+if (param('c4')) { $c4 = param('c4'); }
+if (param('h1')) { $h1 = param('h1'); }
+if (param('h2')) { $h2 = param('h2'); }
+if (param('h3')) { $h3 = param('h3'); }
 
 if (param('h')) {
   print "Content-type: text/plain\n\n";
@@ -37,8 +50,8 @@ my %blocks = (
   'grass' => '16x16+48+0',
   'snow' => '16x16+64+64',
   'myc' => '16x16+208+64',
-  'DOWN' => '16x16+16+128',
-  'UP' => '16x16+32+144',
+  'Down' => '16x16+16+128',
+  'Up' => '16x16+32+144',
   'dirt' => '16x16+32+0',
 );
 
@@ -46,9 +59,9 @@ my $sock = new IO::Socket::INET (
   PeerAddr => $host,
   PeerPort => $port,
   Proto => 'tcp',
-) or $status = "DOWN";
+) or $status = "Down";
 
-if ($status ne "DOWN") {
+if ($status ne "Down") {
   my $FE = "\xFE";
   my $A7 = "\xA7";
   my $data = "";
@@ -62,7 +75,7 @@ if ($status ne "DOWN") {
   $motd = decode("UCS-2BE", $motd);
   $online =~ s/\D//g;
   $max =~ s/\D//g;
-  $status = "UP";
+  $status = "Up";
 } else {
   $online = "???";
   $max = "???";
@@ -101,7 +114,8 @@ for (my $i = $texture_size; $i<=384; $i+=$texture_size) {
 for (my $i = 0; $i<=64; $i+=$texture_size) {
   $image->Composite(image=>$wool,compose=>'over',geometry=>"+0+${i}");
 }
-my $hpos = 48;
+my $hpos = 40;
+my $hpos2 = 150;
 if (param('motd')) { $motd = param('motd'); }
 # Shadow text
 my $shadow_color='black';
@@ -109,17 +123,24 @@ my $line1_pos = 28;
 my $line2_pos = 48;
 my $line3_pos = 68;
 my $line4_pos = 88;
-my $y_offset = 2;
-my $x_offset = 2;
+my $y_offset = 1;
+my $x_offset = 1;
 $image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line1_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"$motd");
-$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line2_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Host: $host");
-$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line3_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Players: $online/$max");
-$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line4_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Status: $status");
+$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line2_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Host:");
+$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line3_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Players:");
+$image->Annotate(font=>$font, x=>($hpos - $x_offset), y=>($line4_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"Status:");
+$image->Annotate(font=>$font, x=>($hpos2 - $x_offset), y=>($line2_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>$host);
+$image->Annotate(font=>$font, x=>($hpos2 - $x_offset), y=>($line3_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>"$online/$max");
+$image->Annotate(font=>$font, x=>($hpos2 - $x_offset), y=>($line4_pos + $y_offset), pointsize=>$point_size, fill=>$shadow_color, text=>$status);
 
-$image->Annotate(font=>$font, x=>$hpos, y=>$line1_pos, pointsize=>$point_size, fill=>$text_color, text=>"$motd");
-$image->Annotate(font=>$font, x=>$hpos, y=>$line2_pos, pointsize=>$point_size, fill=>$text_color, text=>"Host: $host");
-$image->Annotate(font=>$font, x=>$hpos, y=>$line3_pos, pointsize=>$point_size, fill=>$text_color, text=>"Players: $online/$max");
-$image->Annotate(font=>$font, x=>$hpos, y=>$line4_pos, pointsize=>$point_size, fill=>$text_color, text=>"Status: $status");
+$image->Annotate(font=>$font, x=>$hpos, y=>$line1_pos, pointsize=>$point_size, fill=>$c1, text=>"$motd");
+$image->Annotate(font=>$font, x=>$hpos, y=>$line2_pos, pointsize=>$point_size, fill=>$h1, text=>"Host:");
+$image->Annotate(font=>$font, x=>$hpos, y=>$line3_pos, pointsize=>$point_size, fill=>$h2, text=>"Players:");
+$image->Annotate(font=>$font, x=>$hpos, y=>$line4_pos, pointsize=>$point_size, fill=>$h3, text=>"Status:");
+
+$image->Annotate(font=>$font, x=>$hpos2, y=>$line2_pos, pointsize=>$point_size, fill=>$c2, text=>$host);
+$image->Annotate(font=>$font, x=>$hpos2, y=>$line3_pos, pointsize=>$point_size, fill=>$c3, text=>"$online/$max");
+$image->Annotate(font=>$font, x=>$hpos2, y=>$line4_pos, pointsize=>$point_size, fill=>$c4, text=>"$status");
 
 print "Content-type: image/png\n\n";
 binmode STDOUT;
