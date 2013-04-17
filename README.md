@@ -5,7 +5,7 @@ This is a Perl CGI script that generates a PNG banner for Minecraft server statu
 
 Demo: http://cnaude.freeshell.org/minecraft.png
 
-Usage: http://cnaude.freeshell.org/minecraft.png?h=1
+Usage: http://cnaude.freeshell.org/minecraft.cgi?h=1
 
 Requirements:
 * Perl ImageMagick modules
